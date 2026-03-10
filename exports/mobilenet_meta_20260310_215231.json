@@ -1,0 +1,18 @@
+{
+  "run_id": "20260310_215231",
+  "model_type": "mobilenet",
+  "best_val_acc": 0.4822,
+  "trained_at": "2026-03-10T22:59:06.399133",
+  "checkpoint": "checkpoints/mobilenet_20260310_215231_best.h5",
+  "export": "exports/mobilenet_model.h5",
+  "emotions": [
+    "angry",
+    "disgusted",
+    "fearful",
+    "happy",
+    "neutral",
+    "sad",
+    "surprised"
+  ],
+  "num_classes": 7
+}

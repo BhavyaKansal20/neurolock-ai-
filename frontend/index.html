@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NeuroLock AI v2 — Emotion Intelligence</title>
+  <link rel="stylesheet" href="css/main.css"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
+</head>
+<body>
+
+<!-- ─── Loader ─────────────────────────────────────────── -->
+<div id="loader">
+  <div class="loader-inner">
+    <img src="icons/logo.svg" class="loader-logo-img" alt="NeuroLock AI"/>
+    <div class="loader-title">NEUROLOCK AI</div>
+    <div class="loader-sub">EMOTION INTELLIGENCE SYSTEM v2.0</div>
+    <div class="loader-bar-wrap"><div class="loader-bar" id="loader-bar"></div></div>
+    <div class="loader-status" id="loader-status">Connecting to server...</div>
+  </div>
+</div>
+
+<canvas id="bg-canvas"></canvas>
+
+<div id="app">
+
+  <!-- ─── Sidebar ─────────────────────────────────────── -->
+  <aside id="sidebar">
+    <div class="sidebar-logo">
+      <img src="icons/logo.svg" class="sidebar-logo-img" alt="NL"/>
+      <div class="sidebar-brand">
+        <div class="brand-name">NEUROLOCK</div>
+        <div class="brand-ver">v2.0</div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <button class="nav-item active" data-view="standard" onclick="switchView('standard')">
+        <svg viewBox="0 0 24 24"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+        <span>Live Detection</span>
+      </button>
+      <button class="nav-item" data-view="classroom" onclick="switchView('classroom')">
+        <svg viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+        <span>Classroom Mode</span>
+      </button>
+      <button class="nav-item" data-view="students" onclick="switchView('students')">
+        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <span>Students</span>
+      </button>
+      <button class="nav-item" data-view="analytics" onclick="switchView('analytics')">
+        <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        <span>Analytics</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-status">
+      <div class="conn-indicator" id="conn-dot"></div>
+      <span id="conn-text">Connecting...</span>
+    </div>
+  </aside>
+
+  <!-- ─── Main Content ──────────────────────────────────── -->
+  <main id="content">
+
+    <!-- ════ STANDARD VIEW ════ -->
+    <div class="view active" id="view-standard">
+      <div class="view-header">
+        <div>
+          <div class="view-title">Live Emotion Detection</div>
+          <div class="view-sub">Real-time facial analysis with Grad-CAM visualization</div>
+        </div>
+        <div class="header-actions">
+          <div class="live-pill" id="live-pill">
+            <div class="live-dot"></div><span>LIVE</span>
+          </div>
+          <button class="btn-sm" onclick="toggleGradcam()" id="gradcam-btn">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/></svg>
+            Grad-CAM: OFF
+          </button>
+        </div>
+      </div>
+
+      <div class="std-grid">
+        <!-- Feed -->
+        <div class="card feed-card">
+          <div class="card-header">
+            <span class="card-label">CAMERA FEED</span>
+            <span class="card-badge" id="fps-badge">— fps</span>
+          </div>
+          <div id="feed-area">
+            <div class="feed-corners">
+              <div class="corner tl"></div><div class="corner tr"></div>
+              <div class="corner bl"></div><div class="corner br"></div>
+            </div>
+            <div class="scan-line"></div>
+            <div id="feed-placeholder">
+              <div class="placeholder-ring">
+                <svg viewBox="0 0 24 24"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+              </div>
+              <p>Select camera source and press Start</p>
+            </div>
+            <video id="video" autoplay muted playsinline></video>
+            <canvas id="det-canvas"></canvas>
+            <div id="upload-wrap" style="display:none;width:100%;height:100%;position:relative;align-items:center;justify-content:center">
+              <img id="upload-img" style="max-width:100%;max-height:100%;object-fit:contain"/>
+              <canvas id="upload-canvas" style="position:absolute;inset:0;pointer-events:none"></canvas>
+            </div>
+          </div>
+          <div class="feed-controls">
+            <div class="ctrl-row">
+              <select class="ctrl-select" id="cam-source">
+                <option value="0">Webcam (built-in)</option>
+                <option value="1">External Camera</option>
+                <option value="url">IP / RTSP / Phone</option>
+                <option value="upload">Upload Photo</option>
+              </select>
+              <div id="url-input-wrap" style="display:none">
+                <input type="text" class="ctrl-input" id="cam-url" placeholder="rtsp://... or http://IP:8080/video"/>
+              </div>
+              <input type="file" id="file-input" accept="image/*" style="display:none" onchange="handleUpload(event)"/>
+            </div>
+            <div class="ctrl-row">
+              <button class="btn-primary" id="start-btn" onclick="handleStart()">
+                <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg> Start
+              </button>
+              <button class="btn-danger" id="stop-btn" style="display:none" onclick="handleStop()">
+                <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg> Stop
+              </button>
+              <button class="btn-outline" onclick="captureSnapshot()">
+                <svg viewBox="0 0 24 24"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg> Snapshot
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Analysis sidebar -->
+        <div class="analysis-col">
+          <!-- Dominant emotion -->
+          <div class="card dominant-card">
+            <div class="card-header">
+              <span class="card-label">DOMINANT EMOTION</span>
+            </div>
+            <div class="dominant-body">
+              <div class="dominant-emo" id="dominant-emo">—</div>
+              <canvas id="gauge-canvas" width="100" height="56"></canvas>
+            </div>
+            <div class="dominant-conf" id="dominant-conf">No detection</div>
+          </div>
+
+          <!-- Emotion bars -->
+          <div class="card bars-card">
+            <div class="card-header">
+              <span class="card-label">EMOTION BREAKDOWN</span>
+            </div>
+            <div id="emotion-bars">
+              <!-- generated by JS -->
+            </div>
+          </div>
+
+          <!-- Live timeline chart -->
+          <div class="card chart-card">
+            <div class="card-header">
+              <span class="card-label">EMOTION TIMELINE</span>
+              <button class="card-btn" onclick="clearTimeline()">Clear</button>
+            </div>
+            <canvas id="timeline-canvas" height="80"></canvas>
+          </div>
+
+          <!-- Stats -->
+          <div class="card stats-card">
+            <div class="stat-cell">
+              <div class="stat-lbl">Faces</div>
+              <div class="stat-val" id="st-faces">0</div>
+            </div>
+            <div class="stat-cell">
+              <div class="stat-lbl">Frames</div>
+              <div class="stat-val" id="st-frames">0</div>
+            </div>
+            <div class="stat-cell">
+              <div class="stat-lbl">Session</div>
+              <div class="stat-val" id="st-session">—</div>
+            </div>
+            <div class="stat-cell">
+              <div class="stat-lbl">Detections</div>
+              <div class="stat-val" id="st-det">0</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ CLASSROOM VIEW ════ -->
+    <div class="view" id="view-classroom">
+      <div class="view-header">
+        <div>
+          <div class="view-title">Classroom Analysis Mode</div>
+          <div class="view-sub">Multi-student real-time engagement tracking</div>
+        </div>
+        <div class="header-actions" id="cls-header-actions">
+          <button class="btn-primary" id="cls-start-btn" onclick="openSessionModal()">
+            <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg> New Session
+          </button>
+        </div>
+      </div>
+
+      <!-- Session controls bar (hidden until session starts) -->
+      <div class="session-bar" id="session-bar" style="display:none">
+        <div class="session-info">
+          <div class="session-name" id="sess-name">—</div>
+          <div class="session-meta" id="sess-meta">—</div>
+        </div>
+        <div class="phase-btns">
+          <button class="phase-btn active" id="phase-before" onclick="setPhase('before')">Before</button>
+          <button class="phase-btn" id="phase-during" onclick="setPhase('during')">During</button>
+          <button class="phase-btn" id="phase-after" onclick="setPhase('after')">After</button>
+        </div>
+        <button class="btn-danger btn-sm" onclick="endSession()">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg> End Session
+        </button>
+      </div>
+
+      <!-- Multi-face grid -->
+      <div class="cls-grid">
+        <div class="card cls-feed-card">
+          <div class="card-header">
+            <span class="card-label">CLASSROOM FEED</span>
+            <span class="card-badge" id="cls-face-count">0 students detected</span>
+          </div>
+          <div id="cls-feed-area">
+            <div class="feed-corners">
+              <div class="corner tl"></div><div class="corner tr"></div>
+              <div class="corner bl"></div><div class="corner br"></div>
+            </div>
+            <div class="scan-line"></div>
+            <div id="cls-placeholder">
+              <div class="placeholder-ring">
+                <svg viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+              </div>
+              <p>Start a session to begin classroom tracking</p>
+            </div>
+            <video id="cls-video" autoplay muted playsinline style="display:none"></video>
+            <canvas id="cls-canvas"></canvas>
+          </div>
+          <div class="feed-controls">
+            <div class="ctrl-row">
+              <select class="ctrl-select" id="cls-cam-src">
+                <option value="0">Built-in Webcam</option>
+                <option value="1">External USB Camera</option>
+                <option value="url">IP Camera / RTSP</option>
+              </select>
+              <div id="cls-url-wrap" style="display:none">
+                <input type="text" class="ctrl-input" id="cls-cam-url" placeholder="rtsp://... or http://IP/video"/>
+              </div>
+            </div>
+            <div class="ctrl-row">
+              <button class="btn-primary" id="cls-cam-btn" onclick="toggleClassroomCamera()">
+                <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg> Start Camera
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Student cards -->
+        <div class="students-detected-col">
+          <div class="card-header" style="padding:0 0 10px">
+            <span class="card-label">DETECTED STUDENTS</span>
+            <span class="card-badge" id="cls-registered-count">0 registered</span>
+          </div>
+          <div id="student-cards-grid">
+            <div class="empty-students">
+              <svg viewBox="0 0 24 24" width="32" height="32"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+              <p>No students detected yet</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Class engagement chart -->
+      <div class="card engagement-card">
+        <div class="card-header">
+          <span class="card-label">CLASS ENGAGEMENT OVER TIME</span>
+          <div class="phase-legend">
+            <span class="leg-before">Before</span>
+            <span class="leg-during">During</span>
+            <span class="leg-after">After</span>
+          </div>
+        </div>
+        <canvas id="engagement-chart" height="100"></canvas>
+      </div>
+    </div>
+
+    <!-- ════ STUDENTS VIEW ════ -->
+    <div class="view" id="view-students">
+      <div class="view-header">
+        <div>
+          <div class="view-title">Student Database</div>
+          <div class="view-sub">Register and manage student face profiles</div>
+        </div>
+        <div class="header-actions">
+          <button class="btn-primary" onclick="openRegisterModal()">
+            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Register Student
+          </button>
+        </div>
+      </div>
+      <div id="student-list-grid">
+        <div class="empty-card">
+          <svg viewBox="0 0 24 24" width="40" height="40"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+          <p>No students registered yet.<br>Click Register Student to add your first student.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ ANALYTICS VIEW ════ -->
+    <div class="view" id="view-analytics">
+      <div class="view-header">
+        <div>
+          <div class="view-title">Session Analytics</div>
+          <div class="view-sub">Reports and insights from classroom sessions</div>
+        </div>
+      </div>
+      <div id="sessions-list">
+        <div class="empty-card">
+          <svg viewBox="0 0 24 24" width="40" height="40"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          <p>No session reports yet.<br>Complete a classroom session to see analytics.</p>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ─── Status Bar ──────────────────────────────────────── -->
+<div id="status-bar">
+  <div class="status-left">
+    <div class="status-dot idle" id="status-dot"></div>
+    <span id="status-text">Initializing...</span>
+  </div>
+  <div class="status-right">
+    <div class="metric">MODEL <span id="m-model">—</span></div>
+    <div class="metric">DETECTOR <span id="m-det">—</span></div>
+    <div class="metric">FPS <span id="m-fps">—</span></div>
+    <div class="metric">STUDENTS <span id="m-students">—</span></div>
+  </div>
+</div>
+
+<!-- ─── Session Modal ──────────────────────────────────── -->
+<div class="modal-overlay" id="session-modal" style="display:none" onclick="closeModal('session-modal')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title">New Classroom Session</div>
+      <button class="modal-close" onclick="closeModal('session-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Session Name</label>
+        <input type="text" class="form-input" id="sess-input-name" placeholder="e.g. Morning Physics Class"/>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Teacher</label>
+          <input type="text" class="form-input" id="sess-input-teacher" placeholder="Teacher name"/>
+        </div>
+        <div class="form-group">
+          <label>Subject</label>
+          <input type="text" class="form-input" id="sess-input-subject" placeholder="Subject"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Location / Room</label>
+        <input type="text" class="form-input" id="sess-input-location" placeholder="e.g. Room 201"/>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-outline" onclick="closeModal('session-modal')">Cancel</button>
+      <button class="btn-primary" onclick="createSession()">Start Session</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── Register Student Modal ─────────────────────────── -->
+<div class="modal-overlay" id="register-modal" style="display:none" onclick="closeModal('register-modal')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title">Register Student</div>
+      <button class="modal-close" onclick="closeModal('register-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Student ID / Roll No</label>
+          <input type="text" class="form-input" id="reg-id" placeholder="e.g. S001"/>
+        </div>
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" class="form-input" id="reg-name" placeholder="Student name"/>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Class</label>
+          <input type="text" class="form-input" id="reg-class" placeholder="e.g. 10-A"/>
+        </div>
+        <div class="form-group">
+          <label>Roll Number</label>
+          <input type="text" class="form-input" id="reg-roll" placeholder="Roll no."/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Face Photo</label>
+        <div class="photo-upload" id="photo-upload-area" onclick="document.getElementById('reg-photo').click()">
+          <img id="reg-photo-preview" style="display:none;max-width:120px;max-height:120px;border-radius:8px"/>
+          <div id="photo-upload-hint">
+            <svg viewBox="0 0 24 24" width="32" height="32"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <p>Click to upload photo</p>
+          </div>
+          <input type="file" id="reg-photo" accept="image/*" style="display:none" onchange="previewRegPhoto(event)"/>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-outline" onclick="closeModal('register-modal')">Cancel</button>
+      <button class="btn-primary" onclick="registerStudent()">Register</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── Report Modal ───────────────────────────────────── -->
+<div class="modal-overlay" id="report-modal" style="display:none" onclick="closeModal('report-modal')">
+  <div class="modal modal-wide" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title">Session Report</div>
+      <div style="display:flex;gap:8px">
+        <button class="btn-outline btn-sm" onclick="printReport()">Print / Save PDF</button>
+        <button class="modal-close" onclick="closeModal('report-modal')">✕</button>
+      </div>
+    </div>
+    <div class="modal-body" id="report-body" style="max-height:70vh;overflow-y:auto">
+      <!-- Generated dynamically -->
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="js/app.js" type="module"></script>
+</body>
+</html>

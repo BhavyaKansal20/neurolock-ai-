@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <linearGradient id="gCyan" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00e5ff;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#0288d1;stop-opacity:1"/>
+    </linearGradient>
+    <linearGradient id="gPurple" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8b5cf6;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#38bdf8;stop-opacity:1"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Outer ring -->
+  <circle cx="100" cy="100" r="90" fill="none" stroke="url(#gCyan)" stroke-width="1.5" opacity="0.4" stroke-dasharray="8 4"/>
+
+  <!-- Middle ring -->
+  <circle cx="100" cy="100" r="72" fill="none" stroke="url(#gCyan)" stroke-width="1" opacity="0.25"/>
+
+  <!-- Background hex-ish shape -->
+  <polygon points="100,18 166,55 166,130 100,167 34,130 34,55" fill="#0a1628" stroke="url(#gCyan)" stroke-width="1.5" opacity="0.9"/>
+
+  <!-- Neural nodes - outer -->
+  <circle cx="100" cy="28"  r="3.5" fill="#00e5ff" filter="url(#glow)" opacity="0.9"/>
+  <circle cx="160" cy="62"  r="3.5" fill="#00e5ff" filter="url(#glow)" opacity="0.9"/>
+  <circle cx="160" cy="138" r="3.5" fill="#00e5ff" filter="url(#glow)" opacity="0.9"/>
+  <circle cx="100" cy="172" r="3.5" fill="#00e5ff" filter="url(#glow)" opacity="0.9"/>
+  <circle cx="40"  cy="138" r="3.5" fill="#00e5ff" filter="url(#glow)" opacity="0.9"/>
+  <circle cx="40"  cy="62"  r="3.5" fill="#00e5ff" filter="url(#glow)" opacity="0.9"/>
+
+  <!-- Neural connections -->
+  <line x1="100" y1="28"  x2="160" y2="62"  stroke="#00e5ff" stroke-width="0.7" opacity="0.3"/>
+  <line x1="160" y1="62"  x2="160" y2="138" stroke="#00e5ff" stroke-width="0.7" opacity="0.3"/>
+  <line x1="160" y1="138" x2="100" y2="172" stroke="#00e5ff" stroke-width="0.7" opacity="0.3"/>
+  <line x1="100" y1="172" x2="40"  y2="138" stroke="#00e5ff" stroke-width="0.7" opacity="0.3"/>
+  <line x1="40"  y1="138" x2="40"  y2="62"  stroke="#00e5ff" stroke-width="0.7" opacity="0.3"/>
+  <line x1="40"  y1="62"  x2="100" y2="28"  stroke="#00e5ff" stroke-width="0.7" opacity="0.3"/>
+
+  <!-- Inner brain shape -->
+  <!-- Left hemisphere -->
+  <path d="M78,72 C62,72 52,80 52,93 C52,102 57,109 65,113 C60,117 57,123 59,130 C62,139 72,142 80,138 C80,148 86,154 94,154 L94,72 Z"
+        fill="url(#gPurple)" opacity="0.85" filter="url(#glow)"/>
+  <!-- Right hemisphere -->
+  <path d="M122,72 C138,72 148,80 148,93 C148,102 143,109 135,113 C140,117 143,123 141,130 C138,139 128,142 120,138 C120,148 114,154 106,154 L106,72 Z"
+        fill="url(#gPurple)" opacity="0.85" filter="url(#glow)"/>
+
+  <!-- Center divide -->
+  <line x1="100" y1="68" x2="100" y2="158" stroke="#0a1628" stroke-width="3"/>
+
+  <!-- Neural path lines on brain -->
+  <path d="M70,88 Q80,82 90,88" fill="none" stroke="#00e5ff" stroke-width="1.2" opacity="0.7"/>
+  <path d="M66,100 Q78,94 88,100" fill="none" stroke="#00e5ff" stroke-width="1.2" opacity="0.7"/>
+  <path d="M68,112 Q79,106 88,112" fill="none" stroke="#00e5ff" stroke-width="1.2" opacity="0.7"/>
+  <path d="M130,88 Q120,82 110,88" fill="none" stroke="#00e5ff" stroke-width="1.2" opacity="0.7"/>
+  <path d="M134,100 Q122,94 112,100" fill="none" stroke="#00e5ff" stroke-width="1.2" opacity="0.7"/>
+  <path d="M132,112 Q121,106 112,112" fill="none" stroke="#00e5ff" stroke-width="1.2" opacity="0.7"/>
+
+  <!-- Lock icon at bottom center -->
+  <rect x="88" y="155" width="24" height="18" rx="3" fill="#00e5ff" opacity="0.9" filter="url(#glow)"/>
+  <path d="M93,155 L93,149 C93,143 107,143 107,149 L107,155" fill="none" stroke="#00e5ff" stroke-width="2" opacity="0.9"/>
+  <circle cx="100" cy="163" r="3" fill="#0a1628"/>
+
+  <!-- Scan line effect -->
+  <line x1="34" y1="100" x2="166" y2="100" stroke="#00e5ff" stroke-width="0.5" opacity="0.2" stroke-dasharray="3 3"/>
+</svg>

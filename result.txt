@@ -1,0 +1,413 @@
+bhavyakansal@Kansals-Mackbook neurolock-v2 % python train.py --dataset archive --model mobilenet
+/Users/bhavyakansal/.pyenv/versions/3.12.5/lib/python3.12/site-packages/face_recognition_models/__init__.py:7: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  from pkg_resources import resource_filename
+
+NeuroLock AI v2 Training | Run: 20260310_215231
+Dataset: archive | Model: mobilenet
+
+============================================================
+  TRAINING: MobileNetV2 (Transfer Learning)
+============================================================
+Found 25841 images belonging to 7 classes.
+Found 2868 images belonging to 7 classes.
+Found 25841 images belonging to 7 classes.
+Found 2868 images belonging to 7 classes.
+Found 7178 images belonging to 7 classes.
+
+── Dataset loaded ──────────────────────────────────────────
+  Train samples      : 25,841
+  Validation samples : 2,868
+  Test samples       : 7,178
+  Classes            : ['angry', 'disgusted', 'fearful', 'happy', 'neutral', 'sad', 'surprised']
+  Class weights      : {0: 1.0265771492134117, 1: 9.393311523082515, 2: 1.000968391695073, 3: 0.568458797131418, 4: 0.8260397020746092, 5: 0.8492227808997995, 6: 1.2934728201021124}
+────────────────────────────────────────────────────────────
+
+2026-03-10 21:52:32.677778: I metal_plugin/src/device/metal_device.cc:1154] Metal device set to: Apple M4
+2026-03-10 21:52:32.677830: I metal_plugin/src/device/metal_device.cc:296] systemMemory: 16.00 GB
+2026-03-10 21:52:32.677837: I metal_plugin/src/device/metal_device.cc:313] maxCacheSize: 5.92 GB
+2026-03-10 21:52:32.677868: I tensorflow/core/common_runtime/pluggable_device/pluggable_device_factory.cc:305] Could not identify NUMA node of platform GPU ID 0, defaulting to 0. Your kernel may not have been built with NUMA support.
+2026-03-10 21:52:32.677885: I tensorflow/core/common_runtime/pluggable_device/pluggable_device_factory.cc:271] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 0 MB memory) -> physical PluggableDevice (device: 0, name: METAL, pci bus id: <undefined>)
+Model: "NeuroLock_MobileNetV2"
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┓
+┃ Layer (type)                         ┃ Output Shape                ┃         Param # ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━┩
+│ input (InputLayer)                   │ (None, 96, 96, 1)           │               0 │
+├──────────────────────────────────────┼─────────────────────────────┼─────────────────┤
+│ gray_to_rgb (Lambda)                 │ (None, 96, 96, 3)           │               0 │
+├──────────────────────────────────────┼─────────────────────────────┼─────────────────┤
+│ mobilenetv2_0.35_96 (Functional)     │ (None, 3, 3, 1280)          │         410,208 │
+├──────────────────────────────────────┼─────────────────────────────┼─────────────────┤
+│ gap (GlobalAveragePooling2D)         │ (None, 1280)                │               0 │
+├──────────────────────────────────────┼─────────────────────────────┼─────────────────┤
+│ batch_normalization                  │ (None, 1280)                │           5,120 │
+│ (BatchNormalization)                 │                             │                 │
+├──────────────────────────────────────┼─────────────────────────────┼─────────────────┤
+│ dense (Dense)                        │ (None, 256)                 │         327,936 │
+├──────────────────────────────────────┼─────────────────────────────┼─────────────────┤
+│ dropout (Dropout)                    │ (None, 256)                 │               0 │
+├──────────────────────────────────────┼─────────────────────────────┼─────────────────┤
+│ dense_1 (Dense)                      │ (None, 128)                 │          32,896 │
+├──────────────────────────────────────┼─────────────────────────────┼─────────────────┤
+│ dropout_1 (Dropout)                  │ (None, 128)                 │               0 │
+├──────────────────────────────────────┼─────────────────────────────┼─────────────────┤
+│ predictions (Dense)                  │ (None, 7)                   │             903 │
+└──────────────────────────────────────┴─────────────────────────────┴─────────────────┘
+ Total params: 777,063 (2.96 MB)
+ Trainable params: 364,295 (1.39 MB)
+ Non-trainable params: 412,768 (1.57 MB)
+
+  Phase 1: Training head (20 epochs, base frozen)
+/Users/bhavyakansal/.pyenv/versions/3.12.5/lib/python3.12/site-packages/keras/src/trainers/data_adapters/py_dataset_adapter.py:121: UserWarning: Your `PyDataset` class should call `super().__init__(**kwargs)` in its constructor. `**kwargs` can include `workers`, `use_multiprocessing`, `max_queue_size`. Do not pass these arguments to `fit()`, as they will be ignored.
+  self._warn_if_super_not_called()
+Epoch 1/20
+2026-03-10 21:52:33.924161: I tensorflow/core/grappler/optimizers/custom_graph_optimizer_registry.cc:117] Plugin optimizer for device_type GPU is enabled.
+808/808 ━━━━━━━━━━━━━━━━━━━━ 27s 30ms/step - accuracy: 0.2223 - loss: 3.5490 - val_accuracy: 0.3204 - val_loss: 2.2927 - learning_rate: 0.0010
+Epoch 2/20
+808/808 ━━━━━━━━━━━━━━━━━━━━ 23s 28ms/step - accuracy: 0.2618 - loss: 2.4333 - val_accuracy: 0.3337 - val_loss: 2.0971 - learning_rate: 0.0010
+Epoch 3/20
+808/808 ━━━━━━━━━━━━━━━━━━━━ 22s 27ms/step - accuracy: 0.3019 - loss: 2.0826 - val_accuracy: 0.3218 - val_loss: 1.9719 - learning_rate: 0.0010
+Epoch 4/20
+808/808 ━━━━━━━━━━━━━━━━━━━━ 22s 28ms/step - accuracy: 0.3254 - loss: 1.9374 - val_accuracy: 0.3602 - val_loss: 1.8323 - learning_rate: 0.0010
+Epoch 5/20
+808/808 ━━━━━━━━━━━━━━━━━━━━ 22s 28ms/step - accuracy: 0.3318 - loss: 1.8620 - val_accuracy: 0.3651 - val_loss: 1.8131 - learning_rate: 0.0010
+Epoch 6/20
+808/808 ━━━━━━━━━━━━━━━━━━━━ 22s 28ms/step - accuracy: 0.3356 - loss: 1.8213 - val_accuracy: 0.3623 - val_loss: 1.7557 - learning_rate: 0.0010
+Epoch 7/20
+808/808 ━━━━━━━━━━━━━━━━━━━━ 22s 28ms/step - accuracy: 0.3341 - loss: 1.8112 - val_accuracy: 0.3487 - val_loss: 1.7653 - learning_rate: 0.0010
+Epoch 8/20
+808/808 ━━━━━━━━━━━━━━━━━━━━ 21s 27ms/step - accuracy: 0.3329 - loss: 1.8094 - val_accuracy: 0.3536 - val_loss: 1.7652 - learning_rate: 0.0010
+Epoch 9/20
+808/808 ━━━━━━━━━━━━━━━━━━━━ 23s 28ms/step - accuracy: 0.3238 - loss: 1.8133 - val_accuracy: 0.3654 - val_loss: 1.7570 - learning_rate: 0.0010
+Epoch 10/20
+807/808 ━━━━━━━━━━━━━━━━━━━━ 0s 26ms/step - accuracy: 0.3244 - loss: 1.8387 
+Epoch 10: ReduceLROnPlateau reducing learning rate to 0.0004000000189989805.
+808/808 ━━━━━━━━━━━━━━━━━━━━ 23s 28ms/step - accuracy: 0.3283 - loss: 1.8182 - val_accuracy: 0.3501 - val_loss: 1.7784 - learning_rate: 0.0010
+Epoch 11/20
+808/808 ━━━━━━━━━━━━━━━━━━━━ 22s 27ms/step - accuracy: 0.3481 - loss: 1.7446 - val_accuracy: 0.3497 - val_loss: 1.7417 - learning_rate: 4.0000e-04
+Epoch 12/20
+808/808 ━━━━━━━━━━━━━━━━━━━━ 22s 27ms/step - accuracy: 0.3539 - loss: 1.7211 - val_accuracy: 0.3944 - val_loss: 1.6694 - learning_rate: 4.0000e-04
+Epoch 13/20
+808/808 ━━━━━━━━━━━━━━━━━━━━ 22s 27ms/step - accuracy: 0.3598 - loss: 1.7129 - val_accuracy: 0.3818 - val_loss: 1.7038 - learning_rate: 4.0000e-04
+Epoch 14/20
+808/808 ━━━━━━━━━━━━━━━━━━━━ 22s 28ms/step - accuracy: 0.3554 - loss: 1.7206 - val_accuracy: 0.3797 - val_loss: 1.6779 - learning_rate: 4.0000e-04
+Epoch 15/20
+808/808 ━━━━━━━━━━━━━━━━━━━━ 22s 27ms/step - accuracy: 0.3618 - loss: 1.7063 - val_accuracy: 0.3647 - val_loss: 1.7049 - learning_rate: 4.0000e-04
+Epoch 16/20
+808/808 ━━━━━━━━━━━━━━━━━━━━ 0s 26ms/step - accuracy: 0.3480 - loss: 1.7186 
+Epoch 16: ReduceLROnPlateau reducing learning rate to 0.00016000000759959222.
+808/808 ━━━━━━━━━━━━━━━━━━━━ 23s 28ms/step - accuracy: 0.3547 - loss: 1.7043 - val_accuracy: 0.3630 - val_loss: 1.7292 - learning_rate: 4.0000e-04
+Epoch 17/20
+808/808 ━━━━━━━━━━━━━━━━━━━━ 23s 28ms/step - accuracy: 0.3706 - loss: 1.6750 - val_accuracy: 0.3766 - val_loss: 1.6666 - learning_rate: 1.6000e-04
+Epoch 18/20
+808/808 ━━━━━━━━━━━━━━━━━━━━ 22s 27ms/step - accuracy: 0.3713 - loss: 1.6671 - val_accuracy: 0.3818 - val_loss: 1.6650 - learning_rate: 1.6000e-04
+Epoch 19/20
+808/808 ━━━━━━━━━━━━━━━━━━━━ 22s 28ms/step - accuracy: 0.3755 - loss: 1.6708 - val_accuracy: 0.3891 - val_loss: 1.6626 - learning_rate: 1.6000e-04
+Epoch 20/20
+808/808 ━━━━━━━━━━━━━━━━━━━━ 22s 28ms/step - accuracy: 0.3705 - loss: 1.6705 - val_accuracy: 0.3863 - val_loss: 1.6700 - learning_rate: 1.6000e-04
+Restoring model weights from the end of the best epoch: 12.
+
+  Phase 2: Fine-tuning top 40 layers (50 epochs)
+  Unfroze top 40 layers of MobileNetV2
+Epoch 1/50
+808/808 ━━━━━━━━━━━━━━━━━━━━ 0s 86ms/step - accuracy: 0.3245 - loss: 1.7670   
+Epoch 1: val_accuracy improved from None to 0.34484, saving model to checkpoints/mobilenet_20260310_215231_best.h5
+WARNING:absl:You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+808/808 ━━━━━━━━━━━━━━━━━━━━ 79s 90ms/step - accuracy: 0.3327 - loss: 1.7622 - val_accuracy: 0.3448 - val_loss: 1.8021 - learning_rate: 1.0000e-05
+Epoch 2/50
+808/808 ━━━━━━━━━━━━━━━━━━━━ 0s 85ms/step - accuracy: 0.3453 - loss: 1.7387  
+Epoch 2: val_accuracy improved from 0.34484 to 0.36471, saving model to checkpoints/mobilenet_20260310_215231_best.h5
+WARNING:absl:You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+808/808 ━━━━━━━━━━━━━━━━━━━━ 70s 87ms/step - accuracy: 0.3525 - loss: 1.7130 - val_accuracy: 0.3647 - val_loss: 1.7027 - learning_rate: 1.0000e-05
+Epoch 3/50
+808/808 ━━━━━━━━━━━━━━━━━━━━ 0s 84ms/step - accuracy: 0.3647 - loss: 1.6708  
+Epoch 3: val_accuracy improved from 0.36471 to 0.37552, saving model to checkpoints/mobilenet_20260310_215231_best.h5
+WARNING:absl:You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+808/808 ━━━━━━━━━━━━━━━━━━━━ 70s 87ms/step - accuracy: 0.3653 - loss: 1.6943 - val_accuracy: 0.3755 - val_loss: 1.6783 - learning_rate: 1.0000e-05
+Epoch 4/50
+808/808 ━━━━━━━━━━━━━━━━━━━━ 0s 85ms/step - accuracy: 0.3714 - loss: 1.6790  
+Epoch 4: val_accuracy improved from 0.37552 to 0.38040, saving model to checkpoints/mobilenet_20260310_215231_best.h5
+WARNING:absl:You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+808/808 ━━━━━━━━━━━━━━━━━━━━ 70s 87ms/step - accuracy: 0.3674 - loss: 1.6725 - val_accuracy: 0.3804 - val_loss: 1.6535 - learning_rate: 1.0000e-05
+Epoch 5/50
+808/808 ━━━━━━━━━━━━━━━━━━━━ 0s 85ms/step - accuracy: 0.3693 - loss: 1.6646  
+Epoch 5: val_accuracy improved from 0.38040 to 0.41004, saving model to checkpoints/mobilenet_20260310_215231_best.h5
+WARNING:absl:You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+808/808 ━━━━━━━━━━━━━━━━━━━━ 70s 87ms/step - accuracy: 0.3750 - loss: 1.6528 - val_accuracy: 0.4100 - val_loss: 1.6296 - learning_rate: 1.0000e-05
+Epoch 6/50
+808/808 ━━━━━━━━━━━━━━━━━━━━ 0s 85ms/step - accuracy: 0.3818 - loss: 1.6287  
+Epoch 6: val_accuracy did not improve from 0.41004
+808/808 ━━━━━━━━━━━━━━━━━━━━ 70s 87ms/step - accuracy: 0.3820 - loss: 1.6413 - val_accuracy: 0.3968 - val_loss: 1.6258 - learning_rate: 1.0000e-05
+Epoch 7/50
+808/808 ━━━━━━━━━━━━━━━━━━━━ 0s 85ms/step - accuracy: 0.3814 - loss: 1.6586   
+Epoch 7: val_accuracy did not improve from 0.41004
+808/808 ━━━━━━━━━━━━━━━━━━━━ 70s 87ms/step - accuracy: 0.3833 - loss: 1.6423 - val_accuracy: 0.4097 - val_loss: 1.6191 - learning_rate: 1.0000e-05
+Epoch 8/50
+808/808 ━━━━━━━━━━━━━━━━━━━━ 0s 85ms/step - accuracy: 0.3961 - loss: 1.6187  
+Epoch 8: val_accuracy improved from 0.41004 to 0.42957, saving model to checkpoints/mobilenet_20260310_215231_best.h5
+WARNING:absl:You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+808/808 ━━━━━━━━━━━━━━━━━━━━ 70s 87ms/step - accuracy: 0.3919 - loss: 1.6232 - val_accuracy: 0.4296 - val_loss: 1.5897 - learning_rate: 1.0000e-05
+Epoch 9/50
+808/808 ━━━━━━━━━━━━━━━━━━━━ 0s 85ms/step - accuracy: 0.3950 - loss: 1.5976  
+Epoch 9: val_accuracy did not improve from 0.42957
+808/808 ━━━━━━━━━━━━━━━━━━━━ 70s 87ms/step - accuracy: 0.3934 - loss: 1.6072 - val_accuracy: 0.4198 - val_loss: 1.5928 - learning_rate: 1.0000e-05
+Epoch 10/50
+808/808 ━━━━━━━━━━━━━━━━━━━━ 0s 85ms/step - accuracy: 0.3988 - loss: 1.6111  
+Epoch 10: val_accuracy did not improve from 0.42957
+808/808 ━━━━━━━━━━━━━━━━━━━━ 71s 88ms/step - accuracy: 0.3957 - loss: 1.6097 - val_accuracy: 0.4111 - val_loss: 1.5700 - learning_rate: 1.0000e-05
+Epoch 11/50
+808/808 ━━━━━━━━━━━━━━━━━━━━ 0s 90ms/step - accuracy: 0.4012 - loss: 1.5838  
+Epoch 11: val_accuracy did not improve from 0.42957
+808/808 ━━━━━━━━━━━━━━━━━━━━ 74s 92ms/step - accuracy: 0.4030 - loss: 1.5899 - val_accuracy: 0.4264 - val_loss: 1.5661 - learning_rate: 1.0000e-05
+Epoch 12/50
+808/808 ━━━━━━━━━━━━━━━━━━━━ 0s 90ms/step - accuracy: 0.4121 - loss: 1.5705  
+Epoch 12: val_accuracy did not improve from 0.42957
+808/808 ━━━━━━━━━━━━━━━━━━━━ 74s 92ms/step - accuracy: 0.4078 - loss: 1.5762 - val_accuracy: 0.4233 - val_loss: 1.5671 - learning_rate: 1.0000e-05
+Epoch 13/50
+808/808 ━━━━━━━━━━━━━━━━━━━━ 0s 89ms/step - accuracy: 0.4140 - loss: 1.5461  
+Epoch 13: val_accuracy did not improve from 0.42957
+808/808 ━━━━━━━━━━━━━━━━━━━━ 74s 92ms/step - accuracy: 0.4123 - loss: 1.5742 - val_accuracy: 0.4229 - val_loss: 1.5578 - learning_rate: 1.0000e-05
+Epoch 14/50
+808/808 ━━━━━━━━━━━━━━━━━━━━ 0s 86ms/step - accuracy: 0.4077 - loss: 1.5675  
+Epoch 14: val_accuracy did not improve from 0.42957
+808/808 ━━━━━━━━━━━━━━━━━━━━ 72s 89ms/step - accuracy: 0.4091 - loss: 1.5715 - val_accuracy: 0.4254 - val_loss: 1.5614 - learning_rate: 1.0000e-05
+Epoch 15/50
+808/808 ━━━━━━━━━━━━━━━━━━━━ 0s 85ms/step - accuracy: 0.4095 - loss: 1.5712  
+Epoch 15: val_accuracy improved from 0.42957 to 0.43236, saving model to checkpoints/mobilenet_20260310_215231_best.h5
+WARNING:absl:You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+808/808 ━━━━━━━━━━━━━━━━━━━━ 71s 88ms/step - accuracy: 0.4123 - loss: 1.5504 - val_accuracy: 0.4324 - val_loss: 1.5573 - learning_rate: 1.0000e-05
+Epoch 16/50
+808/808 ━━━━━━━━━━━━━━━━━━━━ 0s 85ms/step - accuracy: 0.4167 - loss: 1.5434  
+Epoch 16: val_accuracy improved from 0.43236 to 0.43550, saving model to checkpoints/mobilenet_20260310_215231_best.h5
+WARNING:absl:You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+808/808 ━━━━━━━━━━━━━━━━━━━━ 71s 87ms/step - accuracy: 0.4130 - loss: 1.5538 - val_accuracy: 0.4355 - val_loss: 1.5412 - learning_rate: 1.0000e-05
+Epoch 17/50
+808/808 ━━━━━━━━━━━━━━━━━━━━ 0s 86ms/step - accuracy: 0.4210 - loss: 1.5603  
+Epoch 17: val_accuracy improved from 0.43550 to 0.44491, saving model to checkpoints/mobilenet_20260310_215231_best.h5
+WARNING:absl:You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+808/808 ━━━━━━━━━━━━━━━━━━━━ 72s 89ms/step - accuracy: 0.4201 - loss: 1.5421 - val_accuracy: 0.4449 - val_loss: 1.5285 - learning_rate: 1.0000e-05
+Epoch 18/50
+808/808 ━━━━━━━━━━━━━━━━━━━━ 0s 84ms/step - accuracy: 0.4198 - loss: 1.5283  
+Epoch 18: val_accuracy did not improve from 0.44491
+808/808 ━━━━━━━━━━━━━━━━━━━━ 70s 87ms/step - accuracy: 0.4191 - loss: 1.5442 - val_accuracy: 0.4324 - val_loss: 1.5395 - learning_rate: 1.0000e-05
+Epoch 19/50
+808/808 ━━━━━━━━━━━━━━━━━━━━ 0s 85ms/step - accuracy: 0.4226 - loss: 1.5173  
+Epoch 19: val_accuracy did not improve from 0.44491
+808/808 ━━━━━━━━━━━━━━━━━━━━ 71s 88ms/step - accuracy: 0.4225 - loss: 1.5300 - val_accuracy: 0.4386 - val_loss: 1.5249 - learning_rate: 1.0000e-05
+Epoch 20/50
+808/808 ━━━━━━━━━━━━━━━━━━━━ 0s 84ms/step - accuracy: 0.4246 - loss: 1.5071  
+Epoch 20: val_accuracy did not improve from 0.44491
+808/808 ━━━━━━━━━━━━━━━━━━━━ 70s 87ms/step - accuracy: 0.4235 - loss: 1.5260 - val_accuracy: 0.4421 - val_loss: 1.5286 - learning_rate: 1.0000e-05
+Epoch 21/50
+808/808 ━━━━━━━━━━━━━━━━━━━━ 0s 87ms/step - accuracy: 0.4280 - loss: 1.5041  
+Epoch 21: val_accuracy did not improve from 0.44491
+808/808 ━━━━━━━━━━━━━━━━━━━━ 72s 89ms/step - accuracy: 0.4290 - loss: 1.5098 - val_accuracy: 0.4428 - val_loss: 1.5066 - learning_rate: 1.0000e-05
+Epoch 22/50
+808/808 ━━━━━━━━━━━━━━━━━━━━ 0s 83ms/step - accuracy: 0.4259 - loss: 1.5168  
+Epoch 22: val_accuracy did not improve from 0.44491
+808/808 ━━━━━━━━━━━━━━━━━━━━ 69s 85ms/step - accuracy: 0.4284 - loss: 1.5136 - val_accuracy: 0.4421 - val_loss: 1.5143 - learning_rate: 1.0000e-05
+Epoch 23/50
+808/808 ━━━━━━━━━━━━━━━━━━━━ 0s 83ms/step - accuracy: 0.4265 - loss: 1.5192  
+Epoch 23: val_accuracy improved from 0.44491 to 0.44874, saving model to checkpoints/mobilenet_20260310_215231_best.h5
+WARNING:absl:You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+808/808 ━━━━━━━━━━━━━━━━━━━━ 69s 86ms/step - accuracy: 0.4263 - loss: 1.5109 - val_accuracy: 0.4487 - val_loss: 1.4976 - learning_rate: 1.0000e-05
+Epoch 24/50
+808/808 ━━━━━━━━━━━━━━━━━━━━ 0s 86ms/step - accuracy: 0.4342 - loss: 1.5015  
+Epoch 24: val_accuracy did not improve from 0.44874
+808/808 ━━━━━━━━━━━━━━━━━━━━ 71s 88ms/step - accuracy: 0.4330 - loss: 1.5049 - val_accuracy: 0.4487 - val_loss: 1.4979 - learning_rate: 1.0000e-05
+Epoch 25/50
+808/808 ━━━━━━━━━━━━━━━━━━━━ 0s 84ms/step - accuracy: 0.4317 - loss: 1.4947  
+Epoch 25: val_accuracy improved from 0.44874 to 0.45467, saving model to checkpoints/mobilenet_20260310_215231_best.h5
+WARNING:absl:You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+808/808 ━━━━━━━━━━━━━━━━━━━━ 70s 87ms/step - accuracy: 0.4314 - loss: 1.5022 - val_accuracy: 0.4547 - val_loss: 1.4762 - learning_rate: 1.0000e-05
+Epoch 26/50
+808/808 ━━━━━━━━━━━━━━━━━━━━ 0s 84ms/step - accuracy: 0.4358 - loss: 1.4666  
+Epoch 26: val_accuracy improved from 0.45467 to 0.45921, saving model to checkpoints/mobilenet_20260310_215231_best.h5
+WARNING:absl:You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+808/808 ━━━━━━━━━━━━━━━━━━━━ 70s 86ms/step - accuracy: 0.4359 - loss: 1.4864 - val_accuracy: 0.4592 - val_loss: 1.4743 - learning_rate: 1.0000e-05
+Epoch 27/50
+808/808 ━━━━━━━━━━━━━━━━━━━━ 0s 86ms/step - accuracy: 0.4348 - loss: 1.4824  
+Epoch 27: val_accuracy did not improve from 0.45921
+808/808 ━━━━━━━━━━━━━━━━━━━━ 71s 88ms/step - accuracy: 0.4345 - loss: 1.4810 - val_accuracy: 0.4564 - val_loss: 1.4816 - learning_rate: 1.0000e-05
+Epoch 28/50
+808/808 ━━━━━━━━━━━━━━━━━━━━ 0s 86ms/step - accuracy: 0.4309 - loss: 1.4994   
+Epoch 28: val_accuracy improved from 0.45921 to 0.45955, saving model to checkpoints/mobilenet_20260310_215231_best.h5
+WARNING:absl:You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+808/808 ━━━━━━━━━━━━━━━━━━━━ 71s 88ms/step - accuracy: 0.4352 - loss: 1.4897 - val_accuracy: 0.4596 - val_loss: 1.4708 - learning_rate: 1.0000e-05
+Epoch 29/50
+808/808 ━━━━━━━━━━━━━━━━━━━━ 0s 84ms/step - accuracy: 0.4402 - loss: 1.4727   
+Epoch 29: val_accuracy did not improve from 0.45955
+808/808 ━━━━━━━━━━━━━━━━━━━━ 70s 87ms/step - accuracy: 0.4383 - loss: 1.4807 - val_accuracy: 0.4460 - val_loss: 1.4961 - learning_rate: 1.0000e-05
+Epoch 30/50
+808/808 ━━━━━━━━━━━━━━━━━━━━ 0s 87ms/step - accuracy: 0.4393 - loss: 1.5100  
+Epoch 30: val_accuracy did not improve from 0.45955
+808/808 ━━━━━━━━━━━━━━━━━━━━ 72s 89ms/step - accuracy: 0.4395 - loss: 1.4702 - val_accuracy: 0.4487 - val_loss: 1.4994 - learning_rate: 1.0000e-05
+Epoch 31/50
+808/808 ━━━━━━━━━━━━━━━━━━━━ 0s 86ms/step - accuracy: 0.4400 - loss: 1.4761  
+Epoch 31: val_accuracy improved from 0.45955 to 0.46478, saving model to checkpoints/mobilenet_20260310_215231_best.h5
+WARNING:absl:You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+808/808 ━━━━━━━━━━━━━━━━━━━━ 72s 89ms/step - accuracy: 0.4418 - loss: 1.4677 - val_accuracy: 0.4648 - val_loss: 1.4659 - learning_rate: 1.0000e-05
+Epoch 32/50
+808/808 ━━━━━━━━━━━━━━━━━━━━ 0s 90ms/step - accuracy: 0.4444 - loss: 1.4496   
+Epoch 32: val_accuracy did not improve from 0.46478
+808/808 ━━━━━━━━━━━━━━━━━━━━ 74s 92ms/step - accuracy: 0.4429 - loss: 1.4590 - val_accuracy: 0.4641 - val_loss: 1.4689 - learning_rate: 1.0000e-05
+Epoch 33/50
+808/808 ━━━━━━━━━━━━━━━━━━━━ 0s 83ms/step - accuracy: 0.4449 - loss: 1.4642  
+Epoch 33: val_accuracy did not improve from 0.46478
+808/808 ━━━━━━━━━━━━━━━━━━━━ 69s 85ms/step - accuracy: 0.4459 - loss: 1.4535 - val_accuracy: 0.4449 - val_loss: 1.4753 - learning_rate: 1.0000e-05
+Epoch 34/50
+808/808 ━━━━━━━━━━━━━━━━━━━━ 0s 85ms/step - accuracy: 0.4423 - loss: 1.4388  
+Epoch 34: val_accuracy did not improve from 0.46478
+808/808 ━━━━━━━━━━━━━━━━━━━━ 70s 87ms/step - accuracy: 0.4422 - loss: 1.4462 - val_accuracy: 0.4648 - val_loss: 1.4576 - learning_rate: 1.0000e-05
+Epoch 35/50
+808/808 ━━━━━━━━━━━━━━━━━━━━ 0s 84ms/step - accuracy: 0.4486 - loss: 1.4462  
+Epoch 35: val_accuracy improved from 0.46478 to 0.46618, saving model to checkpoints/mobilenet_20260310_215231_best.h5
+WARNING:absl:You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+808/808 ━━━━━━━━━━━━━━━━━━━━ 70s 86ms/step - accuracy: 0.4472 - loss: 1.4468 - val_accuracy: 0.4662 - val_loss: 1.4424 - learning_rate: 1.0000e-05
+Epoch 36/50
+808/808 ━━━━━━━━━━━━━━━━━━━━ 0s 83ms/step - accuracy: 0.4455 - loss: 1.4423  
+Epoch 36: val_accuracy did not improve from 0.46618
+808/808 ━━━━━━━━━━━━━━━━━━━━ 69s 86ms/step - accuracy: 0.4499 - loss: 1.4393 - val_accuracy: 0.4519 - val_loss: 1.4597 - learning_rate: 1.0000e-05
+Epoch 37/50
+808/808 ━━━━━━━━━━━━━━━━━━━━ 0s 83ms/step - accuracy: 0.4585 - loss: 1.4245  
+Epoch 37: val_accuracy improved from 0.46618 to 0.46967, saving model to checkpoints/mobilenet_20260310_215231_best.h5
+WARNING:absl:You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+808/808 ━━━━━━━━━━━━━━━━━━━━ 69s 85ms/step - accuracy: 0.4550 - loss: 1.4426 - val_accuracy: 0.4697 - val_loss: 1.4468 - learning_rate: 1.0000e-05
+Epoch 38/50
+808/808 ━━━━━━━━━━━━━━━━━━━━ 0s 85ms/step - accuracy: 0.4555 - loss: 1.4214  
+Epoch 38: val_accuracy improved from 0.46967 to 0.47106, saving model to checkpoints/mobilenet_20260310_215231_best.h5
+WARNING:absl:You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+808/808 ━━━━━━━━━━━━━━━━━━━━ 71s 88ms/step - accuracy: 0.4553 - loss: 1.4316 - val_accuracy: 0.4711 - val_loss: 1.4408 - learning_rate: 1.0000e-05
+Epoch 39/50
+808/808 ━━━━━━━━━━━━━━━━━━━━ 0s 84ms/step - accuracy: 0.4529 - loss: 1.4391  
+Epoch 39: val_accuracy did not improve from 0.47106
+808/808 ━━━━━━━━━━━━━━━━━━━━ 70s 86ms/step - accuracy: 0.4528 - loss: 1.4244 - val_accuracy: 0.4658 - val_loss: 1.4402 - learning_rate: 1.0000e-05
+Epoch 40/50
+808/808 ━━━━━━━━━━━━━━━━━━━━ 0s 84ms/step - accuracy: 0.4608 - loss: 1.4342  
+Epoch 40: val_accuracy did not improve from 0.47106
+808/808 ━━━━━━━━━━━━━━━━━━━━ 70s 87ms/step - accuracy: 0.4595 - loss: 1.4299 - val_accuracy: 0.4683 - val_loss: 1.4440 - learning_rate: 1.0000e-05
+Epoch 41/50
+808/808 ━━━━━━━━━━━━━━━━━━━━ 0s 84ms/step - accuracy: 0.4488 - loss: 1.4400  
+Epoch 41: val_accuracy improved from 0.47106 to 0.47803, saving model to checkpoints/mobilenet_20260310_215231_best.h5
+WARNING:absl:You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+808/808 ━━━━━━━━━━━━━━━━━━━━ 70s 87ms/step - accuracy: 0.4562 - loss: 1.4272 - val_accuracy: 0.4780 - val_loss: 1.4388 - learning_rate: 1.0000e-05
+Epoch 42/50
+808/808 ━━━━━━━━━━━━━━━━━━━━ 0s 85ms/step - accuracy: 0.4583 - loss: 1.4283  
+Epoch 42: val_accuracy did not improve from 0.47803
+808/808 ━━━━━━━━━━━━━━━━━━━━ 70s 87ms/step - accuracy: 0.4577 - loss: 1.4262 - val_accuracy: 0.4634 - val_loss: 1.4451 - learning_rate: 1.0000e-05
+Epoch 43/50
+808/808 ━━━━━━━━━━━━━━━━━━━━ 0s 84ms/step - accuracy: 0.4585 - loss: 1.3874  
+Epoch 43: val_accuracy did not improve from 0.47803
+808/808 ━━━━━━━━━━━━━━━━━━━━ 70s 86ms/step - accuracy: 0.4568 - loss: 1.4173 - val_accuracy: 0.4714 - val_loss: 1.4342 - learning_rate: 1.0000e-05
+Epoch 44/50
+808/808 ━━━━━━━━━━━━━━━━━━━━ 0s 84ms/step - accuracy: 0.4559 - loss: 1.4315  
+Epoch 44: val_accuracy did not improve from 0.47803
+808/808 ━━━━━━━━━━━━━━━━━━━━ 70s 87ms/step - accuracy: 0.4565 - loss: 1.4131 - val_accuracy: 0.4749 - val_loss: 1.4383 - learning_rate: 1.0000e-05
+Epoch 45/50
+808/808 ━━━━━━━━━━━━━━━━━━━━ 0s 84ms/step - accuracy: 0.4653 - loss: 1.4056  
+Epoch 45: val_accuracy did not improve from 0.47803
+808/808 ━━━━━━━━━━━━━━━━━━━━ 70s 87ms/step - accuracy: 0.4602 - loss: 1.4126 - val_accuracy: 0.4780 - val_loss: 1.4198 - learning_rate: 1.0000e-05
+Epoch 46/50
+808/808 ━━━━━━━━━━━━━━━━━━━━ 0s 85ms/step - accuracy: 0.4644 - loss: 1.4125  
+Epoch 46: val_accuracy improved from 0.47803 to 0.47943, saving model to checkpoints/mobilenet_20260310_215231_best.h5
+WARNING:absl:You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+808/808 ━━━━━━━━━━━━━━━━━━━━ 70s 87ms/step - accuracy: 0.4645 - loss: 1.4062 - val_accuracy: 0.4794 - val_loss: 1.4270 - learning_rate: 1.0000e-05
+Epoch 47/50
+808/808 ━━━━━━━━━━━━━━━━━━━━ 0s 84ms/step - accuracy: 0.4659 - loss: 1.4024  
+Epoch 47: val_accuracy improved from 0.47943 to 0.48222, saving model to checkpoints/mobilenet_20260310_215231_best.h5
+WARNING:absl:You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+808/808 ━━━━━━━━━━━━━━━━━━━━ 70s 87ms/step - accuracy: 0.4626 - loss: 1.4047 - val_accuracy: 0.4822 - val_loss: 1.4312 - learning_rate: 1.0000e-05
+Epoch 48/50
+808/808 ━━━━━━━━━━━━━━━━━━━━ 0s 84ms/step - accuracy: 0.4662 - loss: 1.4108  
+Epoch 48: val_accuracy did not improve from 0.48222
+808/808 ━━━━━━━━━━━━━━━━━━━━ 70s 87ms/step - accuracy: 0.4652 - loss: 1.4059 - val_accuracy: 0.4822 - val_loss: 1.4190 - learning_rate: 1.0000e-05
+Epoch 49/50
+808/808 ━━━━━━━━━━━━━━━━━━━━ 0s 85ms/step - accuracy: 0.4611 - loss: 1.3846  
+Epoch 49: val_accuracy did not improve from 0.48222
+808/808 ━━━━━━━━━━━━━━━━━━━━ 71s 88ms/step - accuracy: 0.4599 - loss: 1.4007 - val_accuracy: 0.4756 - val_loss: 1.4160 - learning_rate: 1.0000e-05
+Epoch 50/50
+808/808 ━━━━━━━━━━━━━━━━━━━━ 0s 85ms/step - accuracy: 0.4633 - loss: 1.4014  
+Epoch 50: val_accuracy did not improve from 0.48222
+808/808 ━━━━━━━━━━━━━━━━━━━━ 71s 87ms/step - accuracy: 0.4631 - loss: 1.3990 - val_accuracy: 0.4749 - val_loss: 1.4231 - learning_rate: 1.0000e-05
+Restoring model weights from the end of the best epoch: 47.
+WARNING:absl:You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+
+  ✓ MobileNetV2 saved: exports/mobilenet_model.h5
+  ✓ Metadata saved: exports/mobilenet_meta_20260310_215231.json
+
+  Best val accuracy: 48.22%
+
+============================================================
+  Training complete! Next step:
+  python server.py --port 5001
+============================================================
+bhavyakansal@Kansals-Mackbook neurolock-v2 % python server.py --port5001
+/Users/bhavyakansal/.pyenv/versions/3.12.5/lib/python3.12/site-packages/face_recognition_models/__init__.py:7: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  from pkg_resources import resource_filename
+usage: server.py [-h] [--host HOST] [--port PORT] [--debug]
+server.py: error: unrecognized arguments: --port5001
+bhavyakansal@Kansals-Mackbook neurolock-v2 % python server.py --port 5001
+/Users/bhavyakansal/.pyenv/versions/3.12.5/lib/python3.12/site-packages/face_recognition_models/__init__.py:7: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  from pkg_resources import resource_filename
+  Database initialized: data/neurolock.db
+23:01:22  INFO      Loading face detector...
+  Downloading face detector prototxt...
+  Downloading face detector weights (~2MB)...
+  Face detector models ready.
+  Face detector: DNN (ResNet-10 SSD) ✓
+23:01:27  INFO      Loading face recognizer...
+23:01:27  INFO        0 students in database
+23:01:27  INFO      Loading emotion models...
+Traceback (most recent call last):
+  File "/Users/bhavyakansal/Downloads/neurolock-v2/server.py", line 412, in <module>
+    startup()
+  File "/Users/bhavyakansal/Downloads/neurolock-v2/server.py", line 95, in startup
+    predictor = EnsemblePredictor(
+                ^^^^^^^^^^^^^^^^^^
+  File "/Users/bhavyakansal/Downloads/neurolock-v2/model/ensemble.py", line 34, in __init__
+    m = tf.keras.models.load_model(mobilenet_path)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bhavyakansal/.pyenv/versions/3.12.5/lib/python3.12/site-packages/keras/src/saving/saving_api.py", line 196, in load_model
+    return legacy_h5_format.load_model_from_hdf5(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bhavyakansal/.pyenv/versions/3.12.5/lib/python3.12/site-packages/keras/src/legacy/saving/legacy_h5_format.py", line 137, in load_model_from_hdf5
+    model = saving_utils.model_from_config(
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bhavyakansal/.pyenv/versions/3.12.5/lib/python3.12/site-packages/keras/src/legacy/saving/saving_utils.py", line 83, in model_from_config
+    return serialization.deserialize_keras_object(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bhavyakansal/.pyenv/versions/3.12.5/lib/python3.12/site-packages/keras/src/legacy/saving/serialization.py", line 488, in deserialize_keras_object
+    deserialized_obj = cls.from_config(
+                       ^^^^^^^^^^^^^^^^
+  File "/Users/bhavyakansal/.pyenv/versions/3.12.5/lib/python3.12/site-packages/keras/src/models/model.py", line 660, in from_config
+    return functional_from_config(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bhavyakansal/.pyenv/versions/3.12.5/lib/python3.12/site-packages/keras/src/models/functional.py", line 558, in functional_from_config
+    process_layer(layer_data)
+  File "/Users/bhavyakansal/.pyenv/versions/3.12.5/lib/python3.12/site-packages/keras/src/models/functional.py", line 521, in process_layer
+    layer = saving_utils.model_from_config(
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bhavyakansal/.pyenv/versions/3.12.5/lib/python3.12/site-packages/keras/src/legacy/saving/saving_utils.py", line 83, in model_from_config
+    return serialization.deserialize_keras_object(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bhavyakansal/.pyenv/versions/3.12.5/lib/python3.12/site-packages/keras/src/legacy/saving/serialization.py", line 488, in deserialize_keras_object
+    deserialized_obj = cls.from_config(
+                       ^^^^^^^^^^^^^^^^
+  File "/Users/bhavyakansal/.pyenv/versions/3.12.5/lib/python3.12/site-packages/keras/src/layers/core/lambda_layer.py", line 191, in from_config
+    cls._raise_for_lambda_deserialization(safe_mode)
+  File "/Users/bhavyakansal/.pyenv/versions/3.12.5/lib/python3.12/site-packages/keras/src/layers/core/lambda_layer.py", line 172, in _raise_for_lambda_deserialization
+    raise ValueError(
+ValueError: Requested the deserialization of a `Lambda` layer whose `function` is a Python lambda. This carries a potential risk of arbitrary code execution and thus it is disallowed by default. If you trust the source of the artifact, you can override this error by passing `safe_mode=False` to the loading function, or calling `keras.config.enable_unsafe_deserialization().
+bhavyakansal@Kansals-Mackbook neurolock-v2 % 
+
+
+
+"jo tune kha ye sab toh kr hi music we will do later but I like that : 🧠 Model (4 upgrades)
+1. MobileNetV2 pretrained — 57% → 70%+
+2. Test Time Augmentation (TTA) — free +2-3%
+3. Ensemble (2 models average) — +4-5%
+4. Better class balancing for Sad/Fearful
+⚡ Backend (3 upgrades) 5. WebSocket real-time stream — HTTP polling hatao 6. Async frame queue — 30fps camera, 10fps model 7. Grad-CAM API endpoint — heatmap data
+🎨 Frontend (4 upgrades) 8. Live emotion timeline chart (SVG) 9. Grad-CAM heatmap overlay on face 10. Session analytics — pie chart + insights 11. Full UI redesign — cleaner, more premium
+🚀 Project (3 upgrades) 12. Docker + docker-compose 13. `.env` config file 14. WebSocket client in frontend
+
+now from my side : I want like dekh ye photo uploads pe and real camera pe face detection boht kam hai means face detect nhi kr pata ache se kahi bhi kuch bhi even text hi kr leta hai kabhi kabhi so ek toh wohfix ke face detection and also face recognition daal then one more thing if we take a real scenario this is given by my professor ki agar hum ek class mein webcam install kre aur neurolck ai ko uske sath integrate krde and teacher bacho ko topic study krwa rhe hai toh ye real time sabke face detect kre class ke pehle class ke doran and after class over and usko real time process process and analyse kre har ek student face ko alag alag ki before present and after class kya progress hui because bache ke expression bta denge ki usko smash aya ki nahi aya so ye at end uski facial image ke sath ek report dete a end iske sath database connect krna hoga chota sa taki real time har ek ka face detect krke repot dete and graph progress /demotion report ho ki isko smjh aaya ki nhi ya yani real time video analysation bi dalna padega also ye toh one teacher ke point of view se senario hai but we can take and make it usefull for even more senarios ye kisi bhi webcam ke sath isko hm. pair kr ske not only with mine like phone webcam external camera like from using any usb or wire or bluetooh wifi anything and also i want it to make mor emore precise more accurate also baki ke features agar tujhe koi lage toh woh bhi daal dena no problem just make it advance and more like think or suppose we are making this software for indin govt use or commercial software to sell also neurolock ai ka use case ke hisab se ek logo bhi apne app bna ke add kr dena"
